@@ -24,9 +24,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-      with:
-        submodules: true
-
+    
+    - name: Update submodules
+      run: git submodule -q update --init
+      
     - name: Build
       shell: pwsh
       run: ./build.ps1
