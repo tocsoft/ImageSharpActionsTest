@@ -1,0 +1,36 @@
+name: Build
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    
+jobs:
+  build:
+    strategy:
+        matrix:
+          options:
+            - os : ubuntu-latest
+              framework: netcoreapp2.1
+              is32Bit: False
+            - os : windows-latest
+              framework: netcoreapp2.1
+              is32Bit: False
+            - os : windows-latest
+              framework: net472
+              is32Bit: False
+            - os : windows-latest
+              framework: net472
+              is32Bit: True
+
+    runs-on:  ${{ matrix.options.os }}
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Build
+      shell: pwsh
+      run: .\build.p1
+
+    - name: Test
+      shell: pwsh
+      run: .\run-tests.ps1 "${{matrix.options.framework}}" "${{matrix.options.is32Bit}}"
