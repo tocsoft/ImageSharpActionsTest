@@ -5,7 +5,6 @@
 SixLabors.ImageSharp
 </h1>
 
-
 <div align="center">
 
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/SixLabors/ImageSharp/master/LICENSE)
