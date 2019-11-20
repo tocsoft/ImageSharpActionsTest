@@ -1,4 +1,5 @@
-if(Test-Path("$PSScriptRoot\OpenCover.4.6.519") -eq $false){
+
+if((Test-Path("$PSScriptRoot\OpenCover.4.6.519")) -eq $false){
     Invoke-WebRequest https://www.nuget.org/api/v2/package/OpenCover/4.7.922 -OutFile "$PSScriptRoot\opencover.zip"
     [IO.Compression.Zipfile]::ExtractToDirectory("$PSScriptRoot\opencover.zip","$PSScriptRoot\OpenCover.4.6.519")
 }
