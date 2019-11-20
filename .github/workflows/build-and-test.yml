@@ -23,6 +23,9 @@ jobs:
     runs-on:  ${{ matrix.options.os }}
 
     steps:
+    - name: Enable long file paths
+      run: git config --system core.longpaths true
+      
     - uses: actions/checkout@v1
     
     - name: Update submodules
