@@ -6,7 +6,8 @@ param(
 $fallbackVersion = "1.0.0";
 $version = ''
 
-$tagRegex = '^v?(\d+\.\d+\.\d+)(-([a-zA-Z]+)\.?(\d*))?$'
+$tagRegex = '^v?(\d+\.\d+\.\d+)(?:-([a-zA-Z]+)\.?(\d*))?$'
+$gitDescibeTagRegex = '^v?(\d+\.\d+\.\d+)(?:-([a-zA-Z]+)\.?(\d*)(?:-(\d+)-.*?)?)?$'
 
 $skipFullFramework = 'false'
 
@@ -34,8 +35,8 @@ $isVersionTag = $env:APPVEYOR_REPO_TAG_NAME -match $tagRegex
     Write-Debug "Building commit tagged with a compatable version number"
     
     $version = $matches[1]
-     $postTag = $matches[3]
-     $count = $matches[4]
+     $postTag = $matches[2]
+     $count = $matches[3]
      Write-Debug "version number: ${version} post tag: ${postTag} count: ${count}"
      if("$postTag" -ne ""){
         $version = "${version}-${postTag}"
@@ -74,8 +75,15 @@ $isVersionTag = $env:APPVEYOR_REPO_TAG_NAME -match $tagRegex
 
     $buildNumber = $env:APPVEYOR_BUILD_NUMBER
 
-    # build number replacement is padded to 6 places
-    $buildNumber = "$buildNumber".Trim().Trim('0').PadLeft(6,"0");
+    if("$buildNumber" -eq ""){
+        # no counter availible in this environment
+        # let make one up based on time
+        $buildNumber = ([System.DateTime]::Parse((git show -s --format=%ci HEAD)).Ticks / 10000000).ToString("D12")
+    }else{
+        # build number replacement is padded to 6 places
+        $buildNumber = "$buildNumber".Trim().Trim('0').PadLeft(6,"0");
+    }
+
     if("$env:APPVEYOR_PULL_REQUEST_NUMBER" -ne ""){
         Write-Debug "building a PR"
         
