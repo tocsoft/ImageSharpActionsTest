@@ -1,6 +1,12 @@
 name: Build
 
-on: [pull_request]
+on: 
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
     
 jobs:
   build:
@@ -10,19 +16,16 @@ jobs:
             - os : ubuntu-latest
               framework: netcoreapp2.1
               is32Bit: False
-              generateCodeCoverage : False
-            - os : windows-latest
-              framework: netcoreapp2.1
-              is32Bit: False
-              generateCodeCoverage : True
+            # we canb skip windows with netcoreapp as it is coverd by the codecov check
+            # - os : windows-latest
+            #   framework: netcoreapp2.1
+            #   is32Bit: False
             - os : windows-latest
               framework: net472
               is32Bit: False
-              generateCodeCoverage : False
             - os : windows-latest
               framework: net472
               is32Bit: True
-              generateCodeCoverage : False
 
     runs-on:  ${{ matrix.options.os }}
 
@@ -36,6 +39,7 @@ jobs:
       run: git submodule -q update --init
       
     - name: Build
+      if : matrix.options.generateCodeCoverage != true
       shell: pwsh
       run: ./build.ps1 "${{matrix.options.framework}}"
 
@@ -45,18 +49,3 @@ jobs:
       run: ./run-tests.ps1 "${{matrix.options.framework}}" "${{matrix.options.is32Bit}}" true
       env:
         CI : True
-        
-    - name: Test - Code Coverage
-      if : matrix.options.generateCodeCoverage == true
-      shell: pwsh
-      run: ./tests/CodeCoverage/CodeCoverage.ps1
-      env:
-        CI : True
-
-    - name: Update codecov
-      uses: iansu/codecov-action-node@v1.0.0
-      if : matrix.options.generateCodeCoverage == true
-      with:
-        token: ${{secrets.CODECOV_TOKEN}}
-        file: "ImageSharp.Coverage.xml"
-        flags: unittests

@@ -1,0 +1,34 @@
+name: Build
+
+on: 
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+    
+jobs:
+  build:
+    runs-on:   windows-latest
+    steps:      
+    - uses: actions/checkout@v1
+    
+    - name: Enable long file paths
+      run: git config --global core.longpaths true
+      
+    - name: Update submodules
+      run: git submodule -q update --init
+ 
+    - name: Generate Test Coverage
+      shell: pwsh
+      run: ./tests/CodeCoverage/CodeCoverage.ps1
+      env:
+        CI : True
+
+    - name: Update codecov
+      uses: iansu/codecov-action-node@v1.0.0
+      with:
+        token: ${{secrets.CODECOV_TOKEN}}
+        file: "ImageSharp.Coverage.xml"
+        flags: unittests
