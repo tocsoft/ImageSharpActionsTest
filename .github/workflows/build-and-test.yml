@@ -11,30 +11,19 @@ on:
       - master
     
 jobs:
-  Coverage:
-    runs-on:   windows-latest
-    needs: [Build]
-    steps:      
-    - uses: actions/checkout@v1
+  # Coverage:
+  #   runs-on:   windows-latest
+  #   needs: [Build]
     
-    - name: Enable long file paths
-      run: git config --global core.longpaths true
+  #   steps:      
+  #   - uses: actions/checkout@v1
+    
+  #   - name: Enable long file paths
+  #     run: git config --global core.longpaths true
       
-    - name: Update submodules
-      run: git submodule -q update --init
+  #   - name: Update submodules
+  #     run: git submodule -q update --init
  
-    - name: Generate Test Coverage
-      shell: pwsh
-      run: ./tests/CodeCoverage/CodeCoverage.ps1
-      env:
-        CI : True
-
-    - name: Update codecov
-      uses: iansu/codecov-action-node@v1.0.0
-      with:
-        token: ${{secrets.CODECOV_TOKEN}}
-        file: "ImageSharp.Coverage.xml"
-        flags: unittests
       
   Build:
     strategy:
@@ -43,10 +32,10 @@ jobs:
             - os : ubuntu-latest
               framework: netcoreapp2.1
               is32Bit: False
-            # we canb skip windows with netcoreapp as it is coverd by the codecov check
-            # - os : windows-latest
-            #   framework: netcoreapp2.1
-            #   is32Bit: False
+            - os : windows-latest
+              framework: netcoreapp2.1
+              is32Bit: False
+              codeCov: true
             - os : windows-latest
               framework: net472
               is32Bit: False
@@ -66,16 +55,33 @@ jobs:
       run: git submodule -q update --init
       
     - name: Build
+      if : matrix.options.codeCov != true
       shell: pwsh
       run: |
         $DebugPreference = "Continue"
         ./build.ps1 "${{matrix.options.framework}}"
 
     - name: Test
+      if : matrix.options.codeCov != true
       shell: pwsh
       run: ./run-tests.ps1 "${{matrix.options.framework}}" "${{matrix.options.is32Bit}}" true
       env:
         CI : True
+        
+    - name: Generate Test Coverage
+      if : matrix.options.codeCov == true
+      shell: pwsh
+      run: ./tests/CodeCoverage/CodeCoverage.ps1
+      env:
+        CI : True
+
+    - name: Update codecov
+      if : matrix.options.codeCov == true
+      uses: iansu/codecov-action-node@v1.0.0
+      with:
+        token: ${{secrets.CODECOV_TOKEN}}
+        file: "ImageSharp.Coverage.xml"
+        flags: unittests
   
   Publish:
     runs-on: windows-latest
