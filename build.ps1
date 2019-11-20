@@ -30,6 +30,10 @@ if($targetFramework.StartsWith("netcoreapp")){
 # we are running on the build server 
 $isVersionTag = $env:APPVEYOR_REPO_TAG_NAME -match $tagRegex
 
+if($isVersionTag -eq $false -and "$(git diff --stat)" -eq ''){
+    $isVersionTag = (git describe --tags HEAD) -match $tagRegex
+}
+
  if($isVersionTag) {
      
     Write-Debug "Building commit tagged with a compatable version number"
@@ -78,7 +82,12 @@ $isVersionTag = $env:APPVEYOR_REPO_TAG_NAME -match $tagRegex
     if("$buildNumber" -eq ""){
         # no counter availible in this environment
         # let make one up based on time
-        $buildNumber = ([System.DateTime]::Parse((git show -s --format=%ci HEAD)).Ticks / 10000000).ToString("D12")
+        if( "$(git diff --stat)" -eq ''){
+            $buildNumber = ([System.DateTime]::Parse((git show -s --format=%ci HEAD)).Ticks / 10000000).ToString()
+        }else{
+            $buildNumber = [System.Math]::Floor(([System.DateTime]::Now.Ticks / 10000000)).ToString()
+        }
+        $buildNumber = "$buildNumber".Trim().Trim('0').PadLeft(12,"0");        
     }else{
         # build number replacement is padded to 6 places
         $buildNumber = "$buildNumber".Trim().Trim('0').PadLeft(6,"0");
