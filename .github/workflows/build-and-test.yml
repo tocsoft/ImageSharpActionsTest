@@ -40,14 +40,14 @@ jobs:
       run: ./build.ps1 "${{matrix.options.framework}}"
 
     - name: Test
-      if : matrix.options.generateCodeCoverage != True
+      if : matrix.options.generateCodeCoverage != true
       shell: pwsh
       run: ./run-tests.ps1 "${{matrix.options.framework}}" "${{matrix.options.is32Bit}}" true
       env:
         CI : True
         
     - name: Test - Code Coverage
-      if : matrix.options.generateCodeCoverage == True
+      if : matrix.options.generateCodeCoverage == true
       shell: pwsh
       run: ./tests/CodeCoverage/CodeCoverage.ps1
       env:
@@ -55,7 +55,7 @@ jobs:
 
     - name: Update codecov
       uses: iansu/codecov-action-node@v1.0.0
-      if : matrix.options.generateCodeCoverage == True
+      if : matrix.options.generateCodeCoverage == true
       with:
         token: ${{secrets.CODECOV_TOKEN}}
         file: "ImageSharp.Coverage.xml"
