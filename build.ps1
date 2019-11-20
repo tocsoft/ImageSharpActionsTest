@@ -153,8 +153,8 @@ if ($LASTEXITCODE ){ Exit $LASTEXITCODE }
 if ($LASTEXITCODE ){ Exit $LASTEXITCODE }
 
 Write-Host "Packaging projects"
-dotnet pack ./src/ImageSharp/ -c Release --output ../../artifacts --no-build  /p:packageversion=$version /p:skipFullFramework=$skipFullFramework
+dotnet pack ./src/ImageSharp/ -c Release --output "$PSScriptRoot/artifacts" --no-build  /p:packageversion=$version /p:skipFullFramework=$skipFullFramework
 if ($LASTEXITCODE ){ Exit $LASTEXITCODE }
 
-dotnet pack ./src/ImageSharp.Drawing/ -c Release --output ../../artifacts --no-build  /p:packageversion=$version /p:skipFullFramework=$skipFullFramework
+dotnet pack ./src/ImageSharp.Drawing/ -c Release --output "$PSScriptRoot/artifacts" --no-build  /p:packageversion=$version /p:skipFullFramework=$skipFullFramework
 if ($LASTEXITCODE ){ Exit $LASTEXITCODE }
