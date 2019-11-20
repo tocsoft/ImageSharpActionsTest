@@ -116,7 +116,7 @@ if($isVersionTag -eq $false -and "$(git diff --stat)" -eq ''){
 
         $branch = $branch.Replace("/","-").ToLower()
 
-        if($branch.ToLower() -eq "master"){
+        if($branch.ToLower() -eq "master" -or $branch.ToLower() -eq "head"){
             $branch = "dev"
         }
         
