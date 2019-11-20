@@ -37,6 +37,6 @@ jobs:
 
     - name: Test
       shell: pwsh
-      run: ./run-tests.ps1 "${{matrix.options.framework}}" "${{matrix.options.is32Bit}}"
+      run: ./run-tests.ps1 "${{matrix.options.framework}}" "${{matrix.options.is32Bit}}" true
       env:
         CI : True
