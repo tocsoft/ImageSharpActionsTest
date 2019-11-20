@@ -29,9 +29,26 @@ if("$targetFramework".StartsWith("netcoreapp")){
 # we are running on the build server 
 $isVersionTag = $env:APPVEYOR_REPO_TAG_NAME -match $tagRegex
 
-if($isVersionTag -eq $false -and "$(git diff --stat)" -eq ''){
-    if("$(git tag --list)" -ne "") {
-        $isVersionTag = (git describe --tags HEAD) -match $tagRegex
+if($isVersionTag -eq $false){
+    $isVersionTag = "$env:GITHUB_REF".replace("refs/tags/", "") -match $tagRegex
+    if($isVersionTag){
+        Write-Debug "Github tagged build"
+    }
+}else{
+    Write-Debug "Appveyor tagged build"
+}
+
+if($isVersionTag -eq $false){
+    if( "$(git diff --stat)" -eq '')
+    {
+        Write-Debug "Clean repo"
+        if("$(git tag --list)" -ne "") {
+            Write-Debug "Has tags"
+            $isVersionTag = (git describe --tags HEAD) -match $tagRegex
+            Write-Debug $matches
+        }
+    }else{
+        Write-Debug "Dirty repo"
     }
 }
 
