@@ -7,9 +7,9 @@ jobs:
     strategy:
         matrix:
           options:
-            #- os : ubuntu-latest
-            #  framework: netcoreapp2.1
-            #  is32Bit: False
+            - os : ubuntu-latest
+              framework: netcoreapp2.1
+              is32Bit: False
             - os : windows-latest
               framework: netcoreapp2.1
               is32Bit: False
@@ -33,7 +33,7 @@ jobs:
       
     - name: Build
       shell: pwsh
-      run: ./build.ps1
+      run: ./build.ps1 "${{matrix.options.framework}}"
 
     - name: Test
       shell: pwsh

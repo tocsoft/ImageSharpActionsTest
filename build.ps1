@@ -1,9 +1,30 @@
+param(
+    [string]$targetFramework = 'ALL'
+)
 
 # lets calulat the correct version here
 $fallbackVersion = "1.0.0";
 $version = ''
 
 $tagRegex = '^v?(\d+\.\d+\.\d+)(-([a-zA-Z]+)\.?(\d*))?$'
+
+$skipFullFramework = 'false'
+
+# if we are trying to build only netcoreapp versions for testings then skip building the full framework targets
+if($targetFramework.StartsWith("netcoreapp")){
+    $skipFullFramework = 'true'
+}
+
+# if($IsWindows){
+#     $skipFullFramework = 'true'
+#     Write-Info "Building full framework targets - Running windows"
+# }else{
+#     if (Get-Command "mono" -ErrorAction SilentlyContinue) 
+#     {
+#         Write-Info "Building full framework targets - mono installed"
+#         $skipFullFramework = 'true'
+#     }
+# }
 
 # we are running on the build server 
 $isVersionTag = $env:APPVEYOR_REPO_TAG_NAME -match $tagRegex
@@ -94,10 +115,10 @@ if("$env:APPVEYOR_API_URL" -ne ""){
 }
 
 Write-Host "Building version '${version}'"
-dotnet restore /p:packageversion=$version /p:DisableImplicitNuGetFallbackFolder=true
+dotnet restore /p:packageversion=$version /p:DisableImplicitNuGetFallbackFolder=true /p:skipFullFramework=$skipFullFramework
 
 Write-Host "Building projects"
-dotnet build -c Release /p:packageversion=$version
+dotnet build -c Release /p:packageversion=$version /p:skipFullFramework=$skipFullFramework
 
 if ($LASTEXITCODE ){ Exit $LASTEXITCODE }
 
@@ -115,8 +136,8 @@ if ($LASTEXITCODE ){ Exit $LASTEXITCODE }
 if ($LASTEXITCODE ){ Exit $LASTEXITCODE }
 
 Write-Host "Packaging projects"
-dotnet pack ./src/ImageSharp/ -c Release --output ../../artifacts --no-build  /p:packageversion=$version
+dotnet pack ./src/ImageSharp/ -c Release --output ../../artifacts --no-build  /p:packageversion=$version /p:skipFullFramework=$skipFullFramework
 if ($LASTEXITCODE ){ Exit $LASTEXITCODE }
 
-dotnet pack ./src/ImageSharp.Drawing/ -c Release --output ../../artifacts --no-build  /p:packageversion=$version
+dotnet pack ./src/ImageSharp.Drawing/ -c Release --output ../../artifacts --no-build  /p:packageversion=$version /p:skipFullFramework=$skipFullFramework
 if ($LASTEXITCODE ){ Exit $LASTEXITCODE }
