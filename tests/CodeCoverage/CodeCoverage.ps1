@@ -8,10 +8,3 @@ dotnet clean ImageSharp.sln -c Release
 & "$PSScriptRoot\OpenCover.4.6.519\tools\OpenCover.Console.exe" -target:"dotnet.exe" -targetargs:"test tests\ImageSharp.Tests\ImageSharp.Tests.csproj -c Release -f netcoreapp2.1 /p:skipFullFramework=true /p:codecov=true" -register:user -threshold:10 -oldStyle -safemode:off -output:.\ImageSharp.Coverage.xml -hideskipped:All -returntargetcode -filter:"+[SixLabors.ImageSharp*]*" 
 
 if ($LASTEXITCODE ){ Exit $LASTEXITCODE }
-
-pip install codecov
-codecov -f "ImageSharp.Coverage.xml"
-
-
-
-
