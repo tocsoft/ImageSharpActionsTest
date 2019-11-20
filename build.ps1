@@ -7,7 +7,6 @@ $fallbackVersion = "1.0.0";
 $version = ''
 
 $tagRegex = '^v?(\d+\.\d+\.\d+)(?:-([a-zA-Z]+)\.?(\d*))?$'
-$gitDescibeTagRegex = '^v?(\d+\.\d+\.\d+)(?:-([a-zA-Z]+)\.?(\d*)(?:-(\d+)-.*?)?)?$'
 
 $skipFullFramework = 'false'
 
@@ -31,7 +30,9 @@ if($targetFramework.StartsWith("netcoreapp")){
 $isVersionTag = $env:APPVEYOR_REPO_TAG_NAME -match $tagRegex
 
 if($isVersionTag -eq $false -and "$(git diff --stat)" -eq ''){
-    $isVersionTag = (git describe --tags HEAD) -match $tagRegex
+    if("$(git tag --list)" -ne "") {
+        $isVersionTag = (git describe --tags HEAD) -match $tagRegex
+    }
 }
 
  if($isVersionTag) {
