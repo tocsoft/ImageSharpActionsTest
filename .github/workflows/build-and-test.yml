@@ -24,7 +24,7 @@ jobs:
 
     steps:
     - name: Enable long file paths
-      run: git config --system core.longpaths true
+      run: git config core.longpaths true
       
     - uses: actions/checkout@v1
     
