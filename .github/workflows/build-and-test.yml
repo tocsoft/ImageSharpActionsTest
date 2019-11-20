@@ -112,6 +112,6 @@ jobs:
 
     - name: Publish to nightly feed
       if: success()
-      run: nuget.exe push  -Source "GitHub" artifacts/*.nupkg        
+      run: nuget.exe push  -Source "GitHub" .\artifacts\*.nupkg        
     
     # todo if github.ref starts with 'refs/tags' then it was tag push and we can optionally push out package to nuget.org
