@@ -44,8 +44,9 @@ if($isVersionTag -eq $false){
         Write-Debug "Clean repo"
         if("$(git tag --list)" -ne "") {
             Write-Debug "Has tags"
-            $isVersionTag = (git describe --tags HEAD) -match $tagRegex
-            Write-Debug $matches
+            $tagData = (git describe --tags HEAD)
+            $isVersionTag = $tagData -match $tagRegex
+            Write-Debug $tagData
         }
     }else{
         Write-Debug "Dirty repo"
