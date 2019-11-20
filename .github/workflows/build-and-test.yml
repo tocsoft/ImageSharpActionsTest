@@ -77,7 +77,7 @@ jobs:
   Publish:
     runs-on: windows-latest
     needs: [Build, Coverage]
-    if : github.event == 'push'
+    if : github.event_name == 'push'
     steps:      
     - uses: actions/checkout@v1
     
