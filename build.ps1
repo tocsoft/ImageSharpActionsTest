@@ -11,7 +11,7 @@ $tagRegex = '^v?(\d+\.\d+\.\d+)(?:-([a-zA-Z]+)\.?(\d*))?$'
 $skipFullFramework = 'false'
 
 # if we are trying to build only netcoreapp versions for testings then skip building the full framework targets
-if($targetFramework.StartsWith("netcoreapp")){
+if("$targetFramework".StartsWith("netcoreapp")){
     $skipFullFramework = 'true'
 }
 
