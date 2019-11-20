@@ -101,7 +101,9 @@ if($isVersionTag -eq $false){
     if("$buildNumber" -eq ""){
         # no counter availible in this environment
         # let make one up based on time
-        if( "$(git diff --stat)" -eq ''){
+        if( "$env:GITHUB_SHA" -ne ''){
+            $buildNumber = ([System.DateTime]::Parse((git show -s --format=%ci $env:GITHUB_SHA)).Ticks / 10000000).ToString()
+        }elseif( "$(git diff --stat)" -eq ''){
             $buildNumber = ([System.DateTime]::Parse((git show -s --format=%ci HEAD)).Ticks / 10000000).ToString()
         }else{
             $buildNumber = [System.Math]::Floor(([System.DateTime]::Now.Ticks / 10000000)).ToString()
