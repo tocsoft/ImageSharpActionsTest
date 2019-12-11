@@ -15,6 +15,20 @@ if("$targetFramework".StartsWith("netcoreapp")){
     $skipFullFramework = 'true'
 }
 
+function ToBuildNumber {
+    param( $date )
+    if("$date" -eq ""){
+        $date = [System.DateTime]::Now
+    }
+
+    if($date.GetType().fullname -ne 'System.DateTime'){
+        $date = [System.DateTime]::Parse($date)
+    }
+
+    
+    return $date.ToString("yyyyMMddhhmmss")
+}
+
 # if($IsWindows){
 #     $skipFullFramework = 'true'
 #     Write-Info "Building full framework targets - Running windows"
@@ -101,12 +115,13 @@ if($isVersionTag -eq $false){
     if("$buildNumber" -eq ""){
         # no counter availible in this environment
         # let make one up based on time
+
         if( "$env:GITHUB_SHA" -ne ''){
-            $buildNumber = ([System.DateTime]::Parse((git show -s --format=%ci $env:GITHUB_SHA)).Ticks / 10000000).ToString()
+            $buildNumber = ToBuildNumber (git show -s --format=%ci $env:GITHUB_SHA)
         }elseif( "$(git diff --stat)" -eq ''){
-            $buildNumber = ([System.DateTime]::Parse((git show -s --format=%ci HEAD)).Ticks / 10000000).ToString()
+            $buildNumber = ToBuildNumber (git show -s --format=%ci HEAD)
         }else{
-            $buildNumber = [System.Math]::Floor(([System.DateTime]::Now.Ticks / 10000000)).ToString()
+            $buildNumber = ToBuildNumber
         }
         $buildNumber = "$buildNumber".Trim().Trim('0').PadLeft(12,"0");        
     }else{
